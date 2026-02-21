@@ -11,6 +11,7 @@ def scan_port(target, port):
     except: 
         return False
 
+#checkpoint 1 
 
 
 def main(): 
@@ -26,4 +27,6 @@ def main():
         if scan_port(target, port):
             print(f"[+] Port {port} is OPEN")
             open_ports.append(port)
+
+#checkpoint 2 
 
