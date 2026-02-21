@@ -11,3 +11,19 @@ def scan_port(target, port):
     except: 
         return False
 
+
+
+def main(): 
+    target = input("Enter target IP: ")
+
+    print(f"\n scanning {target}. Wait for the Scan completion")
+    print("Scanning ports 1-1024\n")
+
+    start_time = time.time()
+    open_ports = []
+
+    for port in range(1, 1025):
+        if scan_port(target, port):
+            print(f"[+] Port {port} is OPEN")
+            open_ports.append(port)
+
