@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 def scan_port(target, port):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(0.5)
+            s.settimeout(1)
             result = s.connect_ex((target, port))
             if result == 0:
                 return port
@@ -17,10 +17,13 @@ def scan_port(target, port):
 #checkpoint 1 
 
 def main():
-    target = input("Enter target IP: ")
+    target = input("Enter target IP: ").strip() 
+    resolved_ip = socket.gethostbyname(target)
+    print(f"Resolved IP: {resolved_ip}")
+    target = resolved_ip
 
     print(f"\nScanning {target} ...")
-    print("Scanning ports 1–1024 with 100 threads\n")
+    print("Scanning ports 1–1024 with 10 threads\n")
 
     start_time = time.time()
     open_ports = []
