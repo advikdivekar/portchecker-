@@ -23,7 +23,7 @@ def main():
     target = resolved_ip
 
     print(f"\nScanning {target} ...")
-    print("Scanning ports 1–1024 with 10 threads\n")
+    print("Scanning ports 1–1024 with 100 threads\n")
 
     start_time = time.time()
     open_ports = []
