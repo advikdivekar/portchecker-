@@ -33,4 +33,6 @@ def main():
             if result:
                 print(f"[+] Port {result} is OPEN")
                 open_ports.append(result)
-                
+
+#checkpoint 2 
+
