@@ -15,7 +15,10 @@ def scan_port(target, port):
 
 
 def main(): 
-    target = input("Enter target IP: ")
+    target = input("Enter target IP: ").strip() 
+    resolved_ip = socket.gethostbyname(target)
+    print(f"Resolved IP: {resolved_ip}")
+    target = resolved_ip
 
     print(f"\n scanning {target}. Wait for the Scan completion")
     print("Scanning ports 1-1024\n")
