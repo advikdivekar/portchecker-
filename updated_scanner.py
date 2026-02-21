@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 def scan_port(target, port):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(1)
+            s.settimeout(0.5)
             result = s.connect_ex((target, port))
             if result == 0:
                 return port
@@ -25,7 +25,7 @@ def main():
     start_time = time.time()
     open_ports = []
 
-    with ThreadPoolExecutor(max_workers=50) as executor:
+    with ThreadPoolExecutor(max_workers=100) as executor:
         futures = [executor.submit(scan_port, target, port) for port in range(1, 1025)]
 
         for future in as_completed(futures):
