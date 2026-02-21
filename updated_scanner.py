@@ -15,3 +15,22 @@ def scan_port(target, port):
     return None
 
 #checkpoint 1 
+
+def main():
+    target = input("Enter target IP: ")
+
+    print(f"\nScanning {target} ...")
+    print("Scanning ports 1–1024 with 100 threads\n")
+
+    start_time = time.time()
+    open_ports = []
+
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        futures = [executor.submit(scan_port, target, port) for port in range(1, 1025)]
+
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                print(f"[+] Port {result} is OPEN")
+                open_ports.append(result)
+                
