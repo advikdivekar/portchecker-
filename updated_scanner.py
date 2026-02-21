@@ -36,3 +36,14 @@ def main():
 
 #checkpoint 2 
 
+    end_time = time.time()
+
+    print("\nScan Complete")
+    print("Open Ports:", sorted(open_ports))
+    print("Time taken:", round(end_time - start_time, 2), "seconds")
+
+
+if __name__ == "__main__":
+    main()
+
+#checkpoint 3
