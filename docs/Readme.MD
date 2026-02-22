@@ -1,7 +1,7 @@
 # TCP Port Scanner – Comparative Study (Python)
 
-## What we built
-We implemented three versions of a TCP connect port scanner:
+## What I built
+I implemented three versions of a TCP connect port scanner:
 - v1: sequential (single-thread)
 - v2: threaded worker pool (fixed configuration)
 - v3: CLI tool (configurable threads/timeout/port-range)
