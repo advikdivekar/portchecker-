@@ -32,6 +32,3 @@ See: results/bench_results.md
 - TCP connect scan is noisier and more detectable than SYN scan.
 - No UDP scanning.
 - No service fingerprinting (yet).
-
-## Ethics
-Scanning should only be performed on systems you own or have explicit permission to test.
