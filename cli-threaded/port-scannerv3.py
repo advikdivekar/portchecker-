@@ -49,9 +49,16 @@ def main():
 
     end_time = time.time()
 
-    print("\nScan Complete")
+    print("\n========== Scan Summary ==========")
+    print("Scan Complete")
     print("Open Ports:", sorted(open_ports))
     print("Time taken:", round(end_time - start_time, 2), "seconds")
+    print("Average Port Duration:", round((end_time - start_time) / (args.end - args.start + 1), 2), "seconds")
+    print("Timeout Count:", args.timeout)
+    print("Workers Used:", args.threads)
+    print("Target:", args.target)
+    print("Ports Scanned:", args.end - args.start + 1)
+    print("==================================")
 
 
 if __name__ == "__main__":
