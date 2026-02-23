@@ -1,4 +1,4 @@
-timestamp,lang,impl,Workers,timeout_s,start_port,end_port,target,total_time_s
+timestamp,lang,impl,workers,timeout_s,start_port,end_port,target,total_time_s
 2026-02-23T22:01:36.910342,python,threaded,50,2,1,1024,google.com,42.2158
 2026-02-23T22:01:59.050217,python,threaded,100,2,1,1024,google.com,22.1387
 2026-02-23T22:02:11.195224,python,threaded,200,2,1,1024,google.com,12.1445
