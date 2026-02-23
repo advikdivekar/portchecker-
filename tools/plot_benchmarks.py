@@ -18,8 +18,13 @@ def load_data():
 
     df = pd.concat([py_df, go_df], ignore_index=True)
 
+    # Normalize column names
+    df.columns = df.columns.str.strip().str.lower()
+
+    # Normalize language
     df["lang"] = df["lang"].astype(str).str.strip().str.lower()
 
+    # Safe numeric conversion
     df["workers"] = pd.to_numeric(df["workers"], errors="coerce")
     df["timeout_s"] = pd.to_numeric(df["timeout_s"], errors="coerce")
     df["total_time_s"] = pd.to_numeric(df["total_time_s"], errors="coerce")
@@ -41,23 +46,28 @@ def plot_time_vs_workers(df, target, output_dir):
     for timeout in sorted(target_df["timeout_s"].unique()):
         subset = target_df[target_df["timeout_s"] == timeout]
 
-        plt.figure()
+        plt.figure(figsize=(10, 6), dpi=130)
 
-        for lang in subset["lang"].unique():
+        for i, lang in enumerate(sorted(subset["lang"].unique())):
             lang_data = subset[subset["lang"] == lang].sort_values("workers")
 
+            # Slight visual offset to prevent perfect overlap
+            x_values = lang_data["workers"] + (i * 2)
+
             plt.plot(
-                lang_data["workers"],
+                x_values,
                 lang_data["total_time_s"],
                 marker="o",
+                linewidth=2.5,
+                markersize=7,
                 label=lang.capitalize()
             )
 
-        plt.xlabel("Number of Workers")
-        plt.ylabel("Total Scan Time (seconds)")
-        plt.title(f"{target} | Timeout={timeout}s | Time vs Workers")
-        plt.legend()
-        plt.grid(True)
+        plt.xlabel("Number of Workers", fontsize=12)
+        plt.ylabel("Total Scan Time (seconds)", fontsize=12)
+        plt.title(f"{target} | Timeout={timeout}s | Time vs Workers", fontsize=14)
+        plt.legend(fontsize=11)
+        plt.grid(True, alpha=0.3)
 
         plt.savefig(output_dir / f"{target}_timeout_{timeout}_time_vs_workers.png", bbox_inches="tight")
         plt.close()
@@ -66,9 +76,9 @@ def plot_time_vs_workers(df, target, output_dir):
 def plot_time_vs_timeout(df, target, output_dir):
     target_df = df[df["target"] == target]
 
-    plt.figure()
+    plt.figure(figsize=(10, 6), dpi=130)
 
-    for lang in target_df["lang"].unique():
+    for lang in sorted(target_df["lang"].unique()):
         lang_data = target_df[target_df["lang"] == lang]
         grouped = lang_data.groupby("timeout_s")["total_time_s"].mean().reset_index()
 
@@ -76,14 +86,16 @@ def plot_time_vs_timeout(df, target, output_dir):
             grouped["timeout_s"],
             grouped["total_time_s"],
             marker="o",
+            linewidth=2.5,
+            markersize=7,
             label=lang.capitalize()
         )
 
-    plt.xlabel("Timeout (seconds)")
-    plt.ylabel("Average Total Scan Time (seconds)")
-    plt.title(f"{target} | Time vs Timeout")
-    plt.legend()
-    plt.grid(True)
+    plt.xlabel("Timeout (seconds)", fontsize=12)
+    plt.ylabel("Average Total Scan Time (seconds)", fontsize=12)
+    plt.title(f"{target} | Time vs Timeout", fontsize=14)
+    plt.legend(fontsize=11)
+    plt.grid(True, alpha=0.3)
 
     plt.savefig(output_dir / f"{target}_time_vs_timeout.png", bbox_inches="tight")
     plt.close()
@@ -112,19 +124,23 @@ def plot_relative_performance(df, target, output_dir):
 
     merged = merged.sort_values("workers")
 
-    plt.figure()
+    plt.figure(figsize=(10, 6), dpi=130)
 
     plt.plot(
         merged["workers"],
         merged["performance_ratio"],
-        marker="o"
+        marker="o",
+        linewidth=2.5,
+        markersize=7
     )
 
-    plt.axhline(y=1.0, linestyle="--")
-    plt.xlabel("Number of Workers")
-    plt.ylabel("Python / Go Execution Time Ratio")
-    plt.title(f"{target} | Relative Performance (Ratio > 1 ⇒ Go Faster)")
-    plt.grid(True)
+    plt.axhline(y=1.0, linestyle="--", linewidth=1.5)
+    plt.ylim(0.95, 1.05)  # Zoom for clarity
+
+    plt.xlabel("Number of Workers", fontsize=12)
+    plt.ylabel("Python / Go Execution Time Ratio", fontsize=12)
+    plt.title(f"{target} | Relative Performance (Ratio > 1 ⇒ Go Faster)", fontsize=14)
+    plt.grid(True, alpha=0.3)
 
     plt.savefig(output_dir / f"{target}_relative_performance.png", bbox_inches="tight")
     plt.close()
