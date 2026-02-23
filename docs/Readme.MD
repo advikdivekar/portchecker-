@@ -25,8 +25,16 @@ Total time ≈ (number_of_ports / workers) × timeout (rough estimate).
 - Very low timeouts can cause false negatives on real networks.
 - Very high concurrency can trigger rate limiting or packet drops.
 
+## Benchmark Results
+
+Benchmark Results (1–1024 ports, google.com & openai.com)
+
+• Performance scales with workers in both implementations
+• Go shows slightly lower overhead at higher concurrency
+• Differences are minimal for I/O-bound workloads
+
 ## Results
-See: results/bench_results.md
+See: results/bench_results.md and plots/ folder
 
 ## Limitations
 - TCP connect scan is noisier and more detectable than SYN scan.
