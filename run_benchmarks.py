@@ -7,12 +7,12 @@ import csv
 TARGETS = ["google.com", "openai.com"]
 
 TEST_CASES = [
-    {"workers": 50, "timeout": 2},
-    {"workers": 100, "timeout": 2},
-    {"workers": 200, "timeout": 2},
-    {"workers": 100, "timeout": 4},
-    {"workers": 300, "timeout": 4},
-    {"workers": 500, "timeout": 4},
+    {"threads": 50, "timeout": 2},
+    {"threads": 100, "timeout": 2},
+    {"threads": 200, "timeout": 2},
+    {"threads": 100, "timeout": 4},
+    {"threads": 300, "timeout": 4},
+    {"threads": 500, "timeout": 4},
 ]
 
 PORT_START = 1
@@ -34,14 +34,14 @@ if not RESULTS_FILE.exists():
 
 for target in TARGETS:
     for case in TEST_CASES:
-        print(f"\nRunning: {target} | Workers={case['workers']} | Timeout={case['timeout']}")
+        print(f"\nRunning: {target} | Threads={case['threads']} | Timeout={case['timeout']}")
 
         cmd = SCANNER_CMD + [
             target,
             "-s", str(PORT_START),
             "-e", str(PORT_END),
-            "-w", str(case["workers"]),
-            "-t", str(case["timeout"])
+            "-t", str(case["threads"]),
+            "--timeout", str(case["timeout"])
         ]
 
         start = time.time()
@@ -56,7 +56,7 @@ for target in TARGETS:
                 datetime.now().isoformat(),
                 "python",
                 "threaded",
-                case["workers"],
+                case["threads"],
                 case["timeout"],
                 PORT_START,
                 PORT_END,
