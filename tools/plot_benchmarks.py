@@ -4,49 +4,33 @@ from pathlib import Path
 
 
 def load_data():
-    # Current repo base directory
-    base_dir = Path(__file__).resolve().parents[1]
+    root_dir = Path(__file__).resolve().parents[2]
 
-    # Parent directory (CyberSec_work)
-    parent_dir = base_dir.parent
+    python_csv = root_dir / "port-scanner" / "results" / "benchmarks.csv"
+    go_csv = root_dir / "port-scanner-go" / "results" / "benchmarks.csv"
 
-    # Local CSV (current repo)
-    local_csv = base_dir / "results" / "benchmarks.csv"
+    print("Loading from:")
+    print("Python:", python_csv)
+    print("Go:", go_csv)
 
-    # Sibling repos
-    python_csv = parent_dir / "port-scanner" / "results" / "benchmarks.csv"
-    go_csv = parent_dir / "port-scanner-go" / "results" / "benchmarks.csv"
+    py_df = pd.read_csv(python_csv)
+    go_df = pd.read_csv(go_csv)
 
-    dataframes = []
+    df = pd.concat([py_df, go_df], ignore_index=True)
 
-    # Always load current repo CSV if exists
-    if local_csv.exists():
-        dataframes.append(pd.read_csv(local_csv))
+    df["lang"] = df["lang"].astype(str).str.strip().str.lower()
 
-    # Load python repo CSV if exists
-    if python_csv.exists() and python_csv != local_csv:
-        dataframes.append(pd.read_csv(python_csv))
-
-    # Load go repo CSV if exists
-    if go_csv.exists() and go_csv != local_csv:
-        dataframes.append(pd.read_csv(go_csv))
-
-    if not dataframes:
-        raise FileNotFoundError("No benchmark CSV files found.")
-
-    df = pd.concat(dataframes, ignore_index=True)
-
-    # Convert safely
     df["workers"] = pd.to_numeric(df["workers"], errors="coerce")
     df["timeout_s"] = pd.to_numeric(df["timeout_s"], errors="coerce")
     df["total_time_s"] = pd.to_numeric(df["total_time_s"], errors="coerce")
 
-    # Drop corrupted rows
     df = df.dropna(subset=["workers", "timeout_s", "total_time_s"])
 
-    # Cast cleanly
     df["workers"] = df["workers"].astype(int)
     df["timeout_s"] = df["timeout_s"].astype(int)
+
+    print("\nLanguage counts after merge:")
+    print(df["lang"].value_counts())
 
     return df
 
@@ -109,7 +93,7 @@ def plot_relative_performance(df, target, output_dir):
     target_df = df[df["target"] == target]
 
     if not {"python", "go"}.issubset(set(target_df["lang"].unique())):
-        return  # Only plot if both exist
+        return
 
     python_df = target_df[target_df["lang"] == "python"]
     go_df = target_df[target_df["lang"] == "go"]
