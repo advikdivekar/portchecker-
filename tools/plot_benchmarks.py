@@ -3,19 +3,32 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-def load_available_data():
+def load_data():
+    # Current repo base directory
     base_dir = Path(__file__).resolve().parents[1]
+
+    # Parent directory (CyberSec_work)
     parent_dir = base_dir.parent
 
-    current_csv = port-scanner/results/benchmarks.csv
-    go_csv = port-scanner-go/results/benchmarks.csv
+    # Local CSV (current repo)
+    local_csv = base_dir / "results" / "benchmarks.csv"
+
+    # Sibling repos
+    python_csv = parent_dir / "port-scanner" / "results" / "benchmarks.csv"
+    go_csv = parent_dir / "port-scanner-go" / "results" / "benchmarks.csv"
 
     dataframes = []
 
-    if current_csv.exists():
-        dataframes.append(pd.read_csv(current_csv))
+    # Always load current repo CSV if exists
+    if local_csv.exists():
+        dataframes.append(pd.read_csv(local_csv))
 
-    if go_csv.exists():
+    # Load python repo CSV if exists
+    if python_csv.exists() and python_csv != local_csv:
+        dataframes.append(pd.read_csv(python_csv))
+
+    # Load go repo CSV if exists
+    if go_csv.exists() and go_csv != local_csv:
         dataframes.append(pd.read_csv(go_csv))
 
     if not dataframes:
@@ -54,8 +67,7 @@ def plot_time_vs_workers(df, target, output_dir):
         plt.legend()
         plt.grid(True)
 
-        filename = output_dir / f"{target}_timeout_{timeout}_time_vs_workers.png"
-        plt.savefig(filename, bbox_inches="tight")
+        plt.savefig(output_dir / f"{target}_timeout_{timeout}_time_vs_workers.png", bbox_inches="tight")
         plt.close()
 
 
@@ -81,8 +93,7 @@ def plot_time_vs_timeout(df, target, output_dir):
     plt.legend()
     plt.grid(True)
 
-    filename = output_dir / f"{target}_time_vs_timeout.png"
-    plt.savefig(filename, bbox_inches="tight")
+    plt.savefig(output_dir / f"{target}_time_vs_timeout.png", bbox_inches="tight")
     plt.close()
 
 
@@ -90,7 +101,7 @@ def plot_relative_performance(df, target, output_dir):
     target_df = df[df["target"] == target]
 
     if not {"python", "go"}.issubset(set(target_df["lang"].unique())):
-        return  # comparative plot requires both languages
+        return  # Only plot if both exist
 
     python_df = target_df[target_df["lang"] == "python"]
     go_df = target_df[target_df["lang"] == "go"]
@@ -123,13 +134,12 @@ def plot_relative_performance(df, target, output_dir):
     plt.title(f"{target} | Relative Performance (Ratio > 1 ⇒ Go Faster)")
     plt.grid(True)
 
-    filename = output_dir / f"{target}_relative_performance.png"
-    plt.savefig(filename, bbox_inches="tight")
+    plt.savefig(output_dir / f"{target}_relative_performance.png", bbox_inches="tight")
     plt.close()
 
 
 def main():
-    df = load_available_data()
+    df = load_data()
 
     output_dir = Path(__file__).resolve().parents[1] / "plots"
     output_dir.mkdir(exist_ok=True)
@@ -139,7 +149,7 @@ def main():
         plot_time_vs_timeout(df, target, output_dir)
         plot_relative_performance(df, target, output_dir)
 
-    print("Benchmark visualizations generated successfully.")
+    print("Benchmark plots generated successfully.")
 
 
 if __name__ == "__main__":
