@@ -36,9 +36,17 @@ def load_data():
 
     df = pd.concat(dataframes, ignore_index=True)
 
+    # Convert safely
+    df["workers"] = pd.to_numeric(df["workers"], errors="coerce")
+    df["timeout_s"] = pd.to_numeric(df["timeout_s"], errors="coerce")
+    df["total_time_s"] = pd.to_numeric(df["total_time_s"], errors="coerce")
+
+    # Drop corrupted rows
+    df = df.dropna(subset=["workers", "timeout_s", "total_time_s"])
+
+    # Cast cleanly
     df["workers"] = df["workers"].astype(int)
     df["timeout_s"] = df["timeout_s"].astype(int)
-    df["total_time_s"] = df["total_time_s"].astype(float)
 
     return df
 
